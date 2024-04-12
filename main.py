@@ -1,15 +1,19 @@
 import pygame
 pygame.init()
-win_w, win_h = 800, 500
+
+from maps import *
+
+#win_w, win_h = 800, 500
+win_w, win_h = 1050, 700
 
 window = pygame.display.set_mode((win_w, win_h))
 
-
+block_size = 85
 
 fps = 60
 clock= pygame.time.Clock()
 
-background = pygame.image.load("img/background.png")
+background = pygame.image.load("img/bobo.png")
 background = pygame.transform.scale(background, (win_w, win_h))
 
 # pygame.mixer_music.load("snd/music1.mp3")
@@ -48,21 +52,54 @@ class Pers(GameSprite):
 
         self.images = self.images_r
 
-    def move(self, key_left, key_right):
+    # def move(self, key_left, key_right):
+    #     k = pygame.key.get_pressed()
+    #     if k[key_right]:
+    #         self.images = self.images_r
+    #         if self.rect.right <= win_w:
+    #             self.rect.x += self.speed 
+    #             self.state = "walk"
+    #     elif k[key_left]:
+    #         self.images = self.images_l
+    #         if self.rect.left >= 0:
+    #             self.rect.x -= self.speed
+    #             self.state = "walk"
+    #     elif k[pygame.K_w]:
+    #         if self.rect.y >= 0:
+    #             self.rect.y -= self.speed
+
+    #     elif k[pygame.K_s]:
+    #         if self.rect.bottom <= win_h:
+    #             self.rect.y += self.speed
+
+    #     else:
+    #         self.state = "stay"
+        
+    def move(self):
         k = pygame.key.get_pressed()
-        if k[key_right]:
+        if k[pygame.K_d]:
             self.images = self.images_r
             if self.rect.right <= win_w:
-                self.rect.x += self.speed 
+                self.rect.x += self.speed  
                 self.state = "walk"
-        elif k[key_left]:
+        elif k[pygame.K_a]:
             self.images = self.images_l
             if self.rect.left >= 0:
                 self.rect.x -= self.speed
                 self.state = "walk"
 
+        elif k[pygame.K_w]:
+            if self.rect.y >= 0:
+                self.rect.y -= self.speed
+                self.state = "walk"
+
+        elif k[pygame.K_s]:
+            if self.rect.bottom <= win_h:
+                self.rect.y += self.speed
+                self.state = "walk"
         else:
             self.state = "stay"
+
 
     def animation(self):
         
@@ -80,7 +117,8 @@ class Pers(GameSprite):
                 self.image = self.images[3]
             else:
                 self.count_anime = 60
-            self.count_anime -= 1.8
+            self.count_anime -= 2.8
+            
 
         
 
@@ -100,17 +138,39 @@ player_img_l = [pygame.transform.flip(pygame.image.load("img/1.png"), True, Fals
 
 ]
 
+block_img = pygame.image.load("img/block.png")
+block2_img = pygame.image.load("img/block2.png")
 
 
-player = Pers(20, win_h - 120, 85, 95, player_img_r[0], 3, player_img_r, player_img_l)
+player = Pers(20, win_h - 120, 62, 75, player_img_r[0], 3, player_img_r, player_img_l)
 game = True
+
+blocks = []
+x, y = 0, 0
+
+for line in lvl:
+    for simv in line:
+        if simv == "1":
+            b = GameSprite(x ,y, block_size, block_size, block_img)
+            blocks.append(b)
+        if simv == "2":
+            b = GameSprite(x ,y, block_size, block_size, block2_img)
+            blocks.append(b)
+            
+        x += block_size
+    x = 0
+    y += block_size
+
 
 while game:
 
     window.blit(background, (0,0))
     player.update()
-    player.move(pygame.K_a, pygame.K_d)
+    # player.move(pygame.K_a, pygame.K_d)
+    player.move()
     player.animation()
+    for b in blocks:
+            b.update()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
