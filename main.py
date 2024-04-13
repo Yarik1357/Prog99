@@ -222,9 +222,6 @@ while game:
     
         elif screen == "options":
             window.blit(background, (0, 0))
-            player.update()
-            player.move()
-            player.animation()
             
             
 
@@ -241,8 +238,16 @@ while game:
 
 
         elif screen == "play":
+            
             window.blit(background, (0, 0))
             btn_menu2.reset(mouse_x, mouse_y)
+            player.update()
+            player.move()
+            player.animation()
+            
+         
+            
+           
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     game = False
