@@ -9,7 +9,7 @@ win_w, win_h = 1050, 700
 window = pygame.display.set_mode((win_w, win_h))
 pygame.display.set_caption("Menu 0.1")
 
-block_size = 85
+block_size = 65
 
 fps = 60
 clock= pygame.time.Clock()
@@ -169,7 +169,7 @@ player_img_l = [pygame.transform.flip(pygame.image.load("img/1.png"), True, Fals
 
 ]
 
-block_img = pygame.image.load("img/block.png")
+block_img = pygame.image.load("img/grass.png")
 block2_img = pygame.image.load("img/block2.png")
 
 
@@ -205,56 +205,57 @@ while game:
         btn_options.reset(mouse_x, mouse_y)
         btn_quit.reset(mouse_x, mouse_y)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            game =  False
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                x, y = event.pos
-                if btn_options.rect.collidepoint(x, y):
-                    click_snd.play()
-                    screen = "options"
-                elif btn_play.rect.collidepoint(x, y):
-                    click_snd.play()
-                    screen = "play"
-                elif btn_quit.rect.collidepoint(x, y):
-                    click_snd.play()
-                    game = False
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game =  False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    x, y = event.pos
+                    if btn_options.rect.collidepoint(x, y):
+                        click_snd.play()
+                        screen = "options"
+                    elif btn_play.rect.collidepoint(x, y):
+                        click_snd.play()
+                        screen = "play"
+                    elif btn_quit.rect.collidepoint(x, y):
+                        click_snd.play()
+                        game = False
     
-        elif screen == "options":
-            window.blit(background, (0, 0))
+    elif screen == "options":
+        window.blit(background, (0, 0))
             
             
 
-            btn_menu.reset(mouse_x, mouse_y)
+        btn_menu.reset(mouse_x, mouse_y)
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game = False
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    x, y = event.pos
-                    if btn_menu.rect.collidepoint(x, y):
-                        click_snd.play()
-                        screen = "menu"
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game = False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                x, y = event.pos
+                if btn_menu.rect.collidepoint(x, y):
+                    click_snd.play()
+                    screen = "menu"
 
 
-        elif screen == "play":
-            
-            window.blit(background, (0, 0))
-            btn_menu2.reset(mouse_x, mouse_y)
-            player.update()
-            player.move()
-            player.animation()
-            
-         
-            
-           
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    game = False
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    x, y = event.pos
-                    if btn_menu2.rect.collidepoint(x, y):
-                        click_snd.play()
-                        screen = "menu"
+    elif screen == "play":
+        
+        window.blit(background, (0, 0))
+        btn_menu2.reset(mouse_x, mouse_y)
+        player.update()
+        player.move()
+        player.animation()
+        for b in blocks:
+            b.update()
+        
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game = False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                x, y = event.pos
+                if btn_menu2.rect.collidepoint(x, y):
+                    click_snd.play()
+                    screen = "menu"
+
     pygame.display.update()
     clock.tick(fps)
