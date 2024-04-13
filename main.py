@@ -52,6 +52,8 @@ class GameSprite:
 class Pers(GameSprite):
     def __init__(self, x, y, w, h, image, speed, images, images2):
         super().__init__(x, y, w, h, image)
+
+
         self.images_r = []
         
         
@@ -63,7 +65,8 @@ class Pers(GameSprite):
         self.count_anime = 60
 
         self.images_l = []
-        
+        self.vector = None
+
         
         for im in images2:
             self.images_l.append(pygame.transform.scale(im, (w, h)))
@@ -118,7 +121,7 @@ class Pers(GameSprite):
         else:
             self.state = "stay"
 
-
+    
     def animation(self):
         
 
@@ -169,8 +172,8 @@ player_img_l = [pygame.transform.flip(pygame.image.load("img/1.png"), True, Fals
 
 ]
 
-block_img = pygame.image.load("img/grass.png")
-block2_img = pygame.image.load("img/block2.png")
+block_img = pygame.image.load("img/block3.png")
+block2_img = pygame.image.load("img/grass.png")
 
 
 player = Pers(20, win_h - 120, 62, 75, player_img_r[0], 3, player_img_r, player_img_l)
@@ -248,12 +251,18 @@ while game:
             b.update()
         
         
+        
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 x, y = event.pos
+                print(x, y)
+                player.vector = (pygame.Vector2(player.rect.x, player.rect.y)-pygame.Vector2(x, y)).normalize()
+               
+                print(player.vector)
                 if btn_menu2.rect.collidepoint(x, y):
+
                     click_snd.play()
                     screen = "menu"
 
