@@ -119,8 +119,13 @@ class Pers(GameSprite):
             if self.rect.bottom <= win_h:
                 self.rect.y += self.speed
                 self.state = "walk"
+<<<<<<< HEAD
         elif pygame.mouse.get_pressed()[1]:
             print("BIBI")
+=======
+        elif [pygame.MOUSEBUTTONDOWN]:
+            print("ssssssssss")
+>>>>>>> f0421567569ab589973e4ee8d34d4fd1176bbd84
 
         else:
             self.state = "stay"
@@ -151,10 +156,17 @@ class Bullet(GameSprite):
         self.speed = speed
         bullets.append(self)
         
+<<<<<<< HEAD
     # def move(self):
     #     self.rect.y -= self.speed
     #     if self.rect.y <= -20:
     #         bullets.remove(self)
+=======
+    def move(self):
+        self.rect.y -= self.speed
+        if self.rect.y <= -20:
+            bullets.remove(self)
+>>>>>>> f0421567569ab589973e4ee8d34d4fd1176bbd84
             
 
 play_img = pygame.image.load("menu/Play.png")
