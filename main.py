@@ -98,6 +98,7 @@ class Pers(GameSprite):
         
     def move(self):
         k = pygame.key.get_pressed()
+        
         if k[pygame.K_d]:
             self.images = self.images_r
             if self.rect.right <= win_w:
@@ -118,6 +119,9 @@ class Pers(GameSprite):
             if self.rect.bottom <= win_h:
                 self.rect.y += self.speed
                 self.state = "walk"
+        elif [pygame.MOUSEBUTTONDOWN]:
+            print("ssssssssss")
+
         else:
             self.state = "stay"
 
@@ -139,6 +143,18 @@ class Pers(GameSprite):
             else:
                 self.count_anime = 60
             self.count_anime -= 2.8
+
+bullets = []
+class Bullet(GameSprite):
+    def __init__(self, x, y, w, h, image, speed):
+        super().__init__(x, y, w, h, image)
+        self.speed = speed
+        bullets.append(self)
+        
+    def move(self):
+        self.rect.y -= self.speed
+        if self.rect.y <= -20:
+            bullets.remove(self)
             
 
 play_img = pygame.image.load("menu/Play.png")
@@ -268,3 +284,11 @@ while game:
 
     pygame.display.update()
     clock.tick(fps)
+
+
+
+
+
+
+
+
