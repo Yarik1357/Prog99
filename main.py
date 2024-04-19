@@ -14,21 +14,24 @@ win_w, win_h = 1050, 700
 window = pygame.display.set_mode((win_w, win_h))
 pygame.display.set_caption("Menu 0.1")
 
-# block_size = 65
+
 block_size_x = 55
 block_size_y = 65
 
 fps = 60
 clock= pygame.time.Clock()
 
-lostk = 0
+score = 0
+
+
+
 
 background = pygame.image.load("img/bobo.png")
 background = pygame.transform.scale(background, (win_w, win_h))
 
-# pygame.mixer_music.load("snd/music1.mp3")
-# pygame.mixer_music.play(-1)
-# pygame.mixer_music.set_volume(0.2)
+pygame.mixer_music.load("img/Bibibi.mp3")
+pygame.mixer_music.play(-1)
+pygame.mixer_music.set_volume(0.1)
 
 class Button:
     def __init__(self, x, y, w, h, image1, image2):
@@ -179,6 +182,7 @@ class Enemy(GameSprite):
         self.dy = vector[1] * self.speed
 
 play_img = pygame.image.load("menu/Play.png")
+play_img2 = pygame.image.load("menu/Play2.png")
 options_img = pygame.image.load("menu/options.png")
 quit_img = pygame.image.load("menu/Quit.png")
 quit_img2 = pygame.image.load("menu/Quit3.png")
@@ -186,7 +190,7 @@ update_img = pygame.image.load("menu/Update.png")
 
 click_snd = pygame.mixer.Sound("menu/click.mp3")
 
-btn_play = Button(win_w//2-100, (win_h-10)//5, 200, 50, play_img, play_img)
+btn_play = Button(win_w//2-100, (win_h-10)//5, 200, 50, play_img, play_img2)
 btn_options = Button(win_w//2-100, (win_h-10)//5*2, 200, 50, options_img, options_img)
 btn_quit = Button(win_w//2-100, (win_h-10)//5*3, 200, 50, quit_img, quit_img2)
 
@@ -215,7 +219,7 @@ bullet_img = pygame.image.load("img/bullet1.png")
 ghost_img = pygame.image.load("img/ghost.png")
 lava_img = pygame.image.load("img/ogon.png")
 
-player = Pers(20, win_h - 120, 62, 75, player_img_r[0], 3, player_img_r, player_img_l)
+player = Pers(460, win_h - 120, 62, 75, player_img_r[0], 3, player_img_r, player_img_l)
 
 
 blocks = []
@@ -239,12 +243,12 @@ for i in range(6):
     enemy = Enemy(randint(0, win_w-50), randint(-700, 0), 40, 50, ghost_img, 3)
     enemies.append(enemy)
 
-colort = (34,32,29)
+
 font1 = pygame.font.SysFont('ramona', 92)
 font2 = pygame.font.SysFont('ramona', 24)
 
-text1 = font1.render("You Died", 0, colort)
-text2 = font2.render('KILL' + str(lostk), 0, colort)
+tdied = font1.render("You Died", True, (34,32,29))
+tkill = font2.render('KILL ' + str(score), True, (34,32,29))
 
 finish = False
 screen = "menu"
@@ -307,7 +311,8 @@ while game:
             player.update()
             player.move()
             player.animation()
-            
+            tkill = font2.render('KILL ' + str(score), True, (34,32,29))
+            window.blit(tkill, (800, 100))
             
             # enemy.update()
             # enemy.move()
@@ -316,7 +321,7 @@ while game:
 
                 if player.rect.colliderect(b.rect):
                     finish = True
-                    pygame.time.wait(1000)
+                    pygame.time.wait(200)
                     screen = "Exit"
                     
 
@@ -326,13 +331,13 @@ while game:
 
                 if player.rect.colliderect(enemy.rect):
                     finish = True
-                    pygame.time.wait(1000)
+                    pygame.time.wait(200)
                     screen = "Exit"
 
                 for bullet in bullets:
                     if bullet.rect.colliderect(enemy.rect):
                         enemy.rect.x, enemy.rect.y = randint(0, win_w-50), randint(-700, 0)
-                        lostk += 1
+                        score += 1
                         enemies.remove(enemy)
                         bullets.remove(bullet)
                         enemies.append(enemy)
@@ -345,7 +350,7 @@ while game:
                     bullet.update()
                     bullet.move()      
 
-            window.blit(text2, (900, 20))
+            
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
@@ -363,7 +368,8 @@ while game:
     if screen == "Exit":
         window.blit(background, (0, 0))
         btn_quit.reset(mouse_x, mouse_y)
-        window.blit(text1, (350, 230))
+        tdied = font1.render("You Died", True, (34,32,29))
+        window.blit(tdied, (350, 230))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
