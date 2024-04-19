@@ -5,6 +5,8 @@ from maps import *
 
 from random import randint
 
+print(pygame.font.get_fonts())
+
 pygame.time.set_timer(pygame.USEREVENT, 5000)
 
 win_w, win_h = 1050, 700
@@ -12,10 +14,14 @@ win_w, win_h = 1050, 700
 window = pygame.display.set_mode((win_w, win_h))
 pygame.display.set_caption("Menu 0.1")
 
-block_size = 65
+# block_size = 65
+block_size_x = 55
+block_size_y = 65
 
 fps = 60
 clock= pygame.time.Clock()
+
+lostk = 0
 
 background = pygame.image.load("img/bobo.png")
 background = pygame.transform.scale(background, (win_w, win_h))
@@ -69,7 +75,7 @@ class Pers(GameSprite):
 
         self.images_l = []
         self.vector = None
-        self.count = 10
+        self.count = 30
         self.shooting = False
         
         for im in images2:
@@ -185,7 +191,7 @@ btn_options = Button(win_w//2-100, (win_h-10)//5*2, 200, 50, options_img, option
 btn_quit = Button(win_w//2-100, (win_h-10)//5*3, 200, 50, quit_img, quit_img2)
 
 btn_menu = Button(win_w//2-100, (win_h-10)//2, 200, 50, update_img, update_img)
-btn_menu2 = Button(0, 0, 50, 20, update_img, update_img)
+btn_menu2 = Button(0, 0, 110, 40, update_img, update_img)
 
 
 
@@ -207,7 +213,7 @@ block_img = pygame.image.load("img/block3.png")
 block2_img = pygame.image.load("img/grass.png")
 bullet_img = pygame.image.load("img/bullet1.png")
 ghost_img = pygame.image.load("img/ghost.png")
-
+lava_img = pygame.image.load("img/ogon.png")
 
 player = Pers(20, win_h - 120, 62, 75, player_img_r[0], 3, player_img_r, player_img_l)
 
@@ -218,21 +224,27 @@ x, y = 0, 0
 for line in lvl:
     for simv in line:
         if simv == "1":
-            b = GameSprite(x ,y, block_size, block_size, block_img)
+            b = GameSprite(x ,y, block_size_x, block_size_y, block_img)
             blocks.append(b)
         if simv == "2":
-            b = GameSprite(x ,y, block_size, block_size, block2_img)
+            b = GameSprite(x ,y, block_size_x, block_size_y, lava_img)
             blocks.append(b)
             
-        x += block_size
+        x += block_size_x
     x = 0
-    y += block_size
+    y += block_size_y
 
 enemies = []
 for i in range(6):
     enemy = Enemy(randint(0, win_w-50), randint(-700, 0), 40, 50, ghost_img, 3)
     enemies.append(enemy)
-    
+
+colort = (34,32,29)
+font1 = pygame.font.SysFont('ramona', 92)
+font2 = pygame.font.SysFont('ramona', 24)
+
+text1 = font1.render("You Died", 0, colort)
+text2 = font2.render('KILL' + str(lostk), 0, colort)
 
 finish = False
 screen = "menu"
@@ -241,12 +253,15 @@ game = True
 while game:
 
     mouse_x, mouse_y = pygame.mouse.get_pos()
+    
+
 
     if screen == "menu":
         window.blit(background, (0, 0))
         btn_play.reset(mouse_x, mouse_y)
         btn_options.reset(mouse_x, mouse_y)
         btn_quit.reset(mouse_x, mouse_y)
+        
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -292,10 +307,18 @@ while game:
             player.update()
             player.move()
             player.animation()
+            
+            
             # enemy.update()
             # enemy.move()
             for b in blocks:
                 b.update()
+
+                if player.rect.colliderect(b.rect):
+                    finish = True
+                    pygame.time.wait(1000)
+                    screen = "Exit"
+                    
 
             for enemy in enemies:
                 enemy.update()
@@ -303,13 +326,18 @@ while game:
 
                 if player.rect.colliderect(enemy.rect):
                     finish = True
+                    pygame.time.wait(1000)
+                    screen = "Exit"
 
                 for bullet in bullets:
                     if bullet.rect.colliderect(enemy.rect):
                         enemy.rect.x, enemy.rect.y = randint(0, win_w-50), randint(-700, 0)
+                        lostk += 1
                         enemies.remove(enemy)
                         bullets.remove(bullet)
                         enemies.append(enemy)
+                        
+                        
                         
             
             for bullet in bullets:
@@ -317,15 +345,7 @@ while game:
                     bullet.update()
                     bullet.move()      
 
-            
-            
-         
-                
-            
-            
-        
-        
-        
+            window.blit(text2, (900, 20))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game = False
@@ -333,19 +353,26 @@ while game:
                 x, y = event.pos
                 print(x, y)
                 player.shoot(x, y, 12)
-                # player.vector = (pygame.Vector2(player.rect.x, player.rect.y)-pygame.Vector2(x, y)).normalize()
-
-               
-                # print(player.vector)
-
-            
+                # player.vector = (pygame.Vector2(player.rect.x, player.rect.y)-pygame.Vector2(x, y)).normalize()              
+                # print(player.vector)        
                 if btn_menu2.rect.collidepoint(x, y):
-
-
                     finish = False
                     click_snd.play()
                     screen = "menu"
 
+    if screen == "Exit":
+        window.blit(background, (0, 0))
+        btn_quit.reset(mouse_x, mouse_y)
+        window.blit(text1, (350, 230))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game =  False
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    x, y = event.pos
+                    if btn_quit.rect.collidepoint(x, y):
+                        click_snd.play()
+                        game = False
     pygame.display.update()
     clock.tick(fps)
 
