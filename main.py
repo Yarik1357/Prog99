@@ -3,7 +3,10 @@ pygame.init()
 
 from maps import *
 
-#win_w, win_h = 800, 500
+from random import randint
+
+pygame.time.set_timer(pygame.USEREVENT, 5000)
+
 win_w, win_h = 1050, 700
 
 window = pygame.display.set_mode((win_w, win_h))
@@ -66,35 +69,15 @@ class Pers(GameSprite):
 
         self.images_l = []
         self.vector = None
-
+        self.count = 10
+        self.shooting = False
         
         for im in images2:
             self.images_l.append(pygame.transform.scale(im, (w, h)))
 
         self.images = self.images_r
 
-    # def move(self, key_left, key_right):
-    #     k = pygame.key.get_pressed()
-    #     if k[key_right]:
-    #         self.images = self.images_r
-    #         if self.rect.right <= win_w:
-    #             self.rect.x += self.speed 
-    #             self.state = "walk"
-    #     elif k[key_left]:
-    #         self.images = self.images_l
-    #         if self.rect.left >= 0:
-    #             self.rect.x -= self.speed
-    #             self.state = "walk"
-    #     elif k[pygame.K_w]:
-    #         if self.rect.y >= 0:
-    #             self.rect.y -= self.speed
-
-    #     elif k[pygame.K_s]:
-    #         if self.rect.bottom <= win_h:
-    #             self.rect.y += self.speed
-
-    #     else:
-    #         self.state = "stay"
+    
         
     def move(self):
         k = pygame.key.get_pressed()
@@ -119,17 +102,18 @@ class Pers(GameSprite):
             if self.rect.bottom <= win_h:
                 self.rect.y += self.speed
                 self.state = "walk"
-<<<<<<< HEAD
-        elif pygame.mouse.get_pressed()[1]:
-            print("BIBI")
-=======
-        elif [pygame.MOUSEBUTTONDOWN]:
-            print("ssssssssss")
->>>>>>> f0421567569ab589973e4ee8d34d4fd1176bbd84
+        
+        
 
         else:
             self.state = "stay"
 
+        if self.shooting:
+            self.count -= 1
+            if self.count == 0:
+                self.shooting = False
+                self.count = 10
+        
     
     def animation(self):
         
@@ -148,31 +132,50 @@ class Pers(GameSprite):
             else:
                 self.count_anime = 60
             self.count_anime -= 2.8
+    def shoot(self, x, y, speed):
+        if not self.shooting:
+            self.vector = (pygame.Vector2(self.rect.x, self.rect.y)-pygame.Vector2(x, y)).normalize()
+            dx = self.vector[0] * speed
+            dy = self.vector[1] * speed       
+            print(self.vector)
+            b = Bullet(self.rect.centerx, self.rect.y , 15, 20, bullet_img, dx, dy)
+            self.shooting = True
+            
 
 bullets = []
 class Bullet(GameSprite):
+    def __init__(self, x, y, w, h, image, dx, dy):
+        super().__init__(x, y, w, h, image)
+        self.dx, self.dy = dx, dy
+        
+        bullets.append(self)
+
+        
+        
+    def move(self):
+        self.rect.x -= self.dx
+        self.rect.y -= self.dy
+        if self.rect.y <= -20:
+            bullets.remove(self)
+
+class Enemy(GameSprite):
     def __init__(self, x, y, w, h, image, speed):
         super().__init__(x, y, w, h, image)
         self.speed = speed
-        bullets.append(self)
-        
-<<<<<<< HEAD
-    # def move(self):
-    #     self.rect.y -= self.speed
-    #     if self.rect.y <= -20:
-    #         bullets.remove(self)
-=======
+        self.dx = 0
+        self.dy = 0
+       
     def move(self):
-        self.rect.y -= self.speed
-        if self.rect.y <= -20:
-            bullets.remove(self)
->>>>>>> f0421567569ab589973e4ee8d34d4fd1176bbd84
-            
+        self.rect.x -= self.dx
+        self.rect.y -= self.dy
+        vector = (pygame.Vector2(self.rect.x, self.rect.y)-pygame.Vector2(player.rect.x, player.rect.y)).normalize()
+        self.dx = vector[0] * self.speed
+        self.dy = vector[1] * self.speed
 
 play_img = pygame.image.load("menu/Play.png")
 options_img = pygame.image.load("menu/options.png")
 quit_img = pygame.image.load("menu/Quit.png")
-quit_img2 = pygame.image.load("menu/Quit2.png")
+quit_img2 = pygame.image.load("menu/Quit3.png")
 update_img = pygame.image.load("menu/Update.png")
 
 click_snd = pygame.mixer.Sound("menu/click.mp3")
@@ -202,6 +205,8 @@ player_img_l = [pygame.transform.flip(pygame.image.load("img/1.png"), True, Fals
 
 block_img = pygame.image.load("img/block3.png")
 block2_img = pygame.image.load("img/grass.png")
+bullet_img = pygame.image.load("img/bullet1.png")
+ghost_img = pygame.image.load("img/ghost.png")
 
 
 player = Pers(20, win_h - 120, 62, 75, player_img_r[0], 3, player_img_r, player_img_l)
@@ -223,6 +228,13 @@ for line in lvl:
     x = 0
     y += block_size
 
+enemies = []
+for i in range(6):
+    enemy = Enemy(randint(0, win_w-50), randint(-700, 0), 40, 50, ghost_img, 3)
+    enemies.append(enemy)
+    
+
+finish = False
 screen = "menu"
 game = True
 
@@ -270,13 +282,47 @@ while game:
 
     elif screen == "play":
         
-        window.blit(background, (0, 0))
+        # window.blit(background, (0, 0))
         btn_menu2.reset(mouse_x, mouse_y)
-        player.update()
-        player.move()
-        player.animation()
-        for b in blocks:
-            b.update()
+
+        if not finish:
+           
+            window.blit(background, (0, 0))
+            btn_menu2.reset(mouse_x, mouse_y)
+            player.update()
+            player.move()
+            player.animation()
+            # enemy.update()
+            # enemy.move()
+            for b in blocks:
+                b.update()
+
+            for enemy in enemies:
+                enemy.update()
+                enemy.move()
+
+                if player.rect.colliderect(enemy.rect):
+                    finish = True
+
+                for bullet in bullets:
+                    if bullet.rect.colliderect(enemy.rect):
+                        enemy.rect.x, enemy.rect.y = randint(0, win_w-50), randint(-700, 0)
+                        enemies.remove(enemy)
+                        bullets.remove(bullet)
+                        enemies.append(enemy)
+                        
+            
+            for bullet in bullets:
+                    
+                    bullet.update()
+                    bullet.move()      
+
+            
+            
+         
+                
+            
+            
         
         
         
@@ -286,11 +332,17 @@ while game:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 x, y = event.pos
                 print(x, y)
-                player.vector = (pygame.Vector2(player.rect.x, player.rect.y)-pygame.Vector2(x, y)).normalize()
+                player.shoot(x, y, 12)
+                # player.vector = (pygame.Vector2(player.rect.x, player.rect.y)-pygame.Vector2(x, y)).normalize()
+
                
-                print(player.vector)
+                # print(player.vector)
+
+            
                 if btn_menu2.rect.collidepoint(x, y):
 
+
+                    finish = False
                     click_snd.play()
                     screen = "menu"
 
