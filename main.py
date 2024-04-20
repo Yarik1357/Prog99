@@ -31,7 +31,7 @@ background = pygame.transform.scale(background, (win_w, win_h))
 
 pygame.mixer_music.load("img/Bibibi.mp3")
 pygame.mixer_music.play(-1)
-pygame.mixer_music.set_volume(0.1)
+pygame.mixer_music.set_volume(0.2)
 
 class Button:
     def __init__(self, x, y, w, h, image1, image2):
@@ -131,7 +131,7 @@ class Pers(GameSprite):
 
             self.image = self.images[0]
         elif self.state == "walk":
-            print(self.count_anime)
+            # print(self.count_anime)
             if self.count_anime >= 40:
                 self.image = self.images[1]
             elif 20 < self.count_anime < 40:
@@ -146,7 +146,7 @@ class Pers(GameSprite):
             self.vector = (pygame.Vector2(self.rect.x, self.rect.y)-pygame.Vector2(x, y)).normalize()
             dx = self.vector[0] * speed
             dy = self.vector[1] * speed       
-            print(self.vector)
+            # print(self.vector)
             b = Bullet(self.rect.centerx, self.rect.y , 15, 20, bullet_img, dx, dy)
             self.shooting = True
             
@@ -339,18 +339,17 @@ while game:
 
                 for bullet in bullets:
                     if bullet.rect.colliderect(enemy.rect):
-                        enemy.rect.x, enemy.rect.y = randint(0, win_w-50), randint(-700, 0)
+                        # enemy.rect.x, enemy.rect.y = randint(0, win_w-50), randint(-700, 0)
                         score += 1
+                        print(score)
                         enemies.remove(enemy)
                         bullets.remove(bullet)
-                        enemies.append(enemy)
-                
-                if score >= 10:
-                    
-                    enemy.rect.x, enemy.rect.y = randint(0, win_w-50), randint(-700, 0)
-                    slog = 12
-                        
-                        
+                        enemy = Enemy(randint(0, win_w-50), randint(-700, 0), 40, 50, ghost_img, 3)
+                        enemies.append(enemy)                        
+
+            # if score == 10:
+            #     enemy = Enemy(randint(0, win_w-50), randint(-700, 0), 40, 50, ghost_img, 5)
+            #     enemies.append(enemy) 
                         
             
             for bullet in bullets:
@@ -364,7 +363,7 @@ while game:
                 game = False
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 x, y = event.pos
-                print(x, y)
+                # print(x, y)
                 player.shoot(x, y, 12)
                 # player.vector = (pygame.Vector2(player.rect.x, player.rect.y)-pygame.Vector2(x, y)).normalize()              
                 # print(player.vector)        
@@ -377,7 +376,7 @@ while game:
         window.blit(background, (0, 0))
         btn_quit.reset(mouse_x, mouse_y)
         tdied = font1.render("You Died", True, (34,32,29))
-        window.blit(tdied, (350, 230))
+        window.blit(tdied, (390, 230))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
