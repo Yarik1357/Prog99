@@ -345,11 +345,7 @@ while game:
                         enemies.remove(enemy)
                         bullets.remove(bullet)
                         enemy = Enemy(randint(0, win_w-50), randint(-700, 0), 40, 50, ghost_img, 3)
-                        enemies.append(enemy)                        
-
-            # if score == 10:
-            #     enemy = Enemy(randint(0, win_w-50), randint(-700, 0), 40, 50, ghost_img, 5)
-            #     enemies.append(enemy) 
+                        enemies.append(enemy)          
                         
             
             for bullet in bullets:
