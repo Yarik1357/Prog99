@@ -311,7 +311,7 @@ while game:
             player.update()
             player.move()
             player.animation()
-            tkill = font2.render('KILL ' + str(score), True, (34,32,29))
+            tkill = font2.render('KILL: ' + str(score), True, (34,32,29))
             window.blit(tkill, (800, 100))
             
             # enemy.update()
