@@ -181,18 +181,17 @@ class Enemy(GameSprite):
         self.dx = vector[0] * self.speed
         self.dy = vector[1] * self.speed
 
-play_img = pygame.image.load("menu/Play.png")
-play_img2 = pygame.image.load("menu/Play2.png")
-options_img = pygame.image.load("menu/options.png")
-quit_img = pygame.image.load("menu/Quit.png")
-quit_img2 = pygame.image.load("menu/Quit3.png")
-update_img = pygame.image.load("menu/Update.png")
+play_img = pygame.image.load("menu/Play33.png")
+options_img = pygame.image.load("menu/options33.png")
+quit_img = pygame.image.load("menu/Quit33.png")
+
+update_img = pygame.image.load("menu/Update33.png")
 
 click_snd = pygame.mixer.Sound("menu/click.mp3")
 
-btn_play = Button(win_w//2-100, (win_h-10)//5, 200, 50, play_img, play_img2)
-btn_options = Button(win_w//2-100, (win_h-10)//5*2, 200, 50, options_img, options_img)
-btn_quit = Button(win_w//2-100, (win_h-10)//5*3, 200, 50, quit_img, quit_img2)
+btn_play = Button(win_w//2-100, (win_h-10)//5, 200, 80, play_img, play_img)
+btn_options = Button(win_w//2-100, (win_h-10)//5*2, 200, 80, options_img, options_img)
+btn_quit = Button(win_w//2-100, (win_h-10)//5*3, 200, 80, quit_img, quit_img)
 
 btn_menu = Button(win_w//2-100, (win_h-10)//2, 200, 50, update_img, update_img)
 btn_menu2 = Button(0, 0, 110, 40, update_img, update_img)
@@ -237,9 +236,9 @@ for line in lvl:
         x += block_size_x
     x = 0
     y += block_size_y
-
+slog = 6
 enemies = []
-for i in range(6):
+for i in range(slog):
     enemy = Enemy(randint(0, win_w-50), randint(-700, 0), 40, 50, ghost_img, 3)
     enemies.append(enemy)
 
@@ -303,16 +302,17 @@ while game:
         
         # window.blit(background, (0, 0))
         btn_menu2.reset(mouse_x, mouse_y)
+        
 
         if not finish:
-           
+        
             window.blit(background, (0, 0))
             btn_menu2.reset(mouse_x, mouse_y)
             player.update()
             player.move()
             player.animation()
             tkill = font2.render('KILL: ' + str(score), True, (34,32,29))
-            window.blit(tkill, (800, 100))
+            window.blit(tkill, (900, 50))
             
             # enemy.update()
             # enemy.move()
@@ -333,6 +333,9 @@ while game:
                     finish = True
                     pygame.time.wait(200)
                     screen = "Exit"
+                
+                
+                    
 
                 for bullet in bullets:
                     if bullet.rect.colliderect(enemy.rect):
@@ -341,6 +344,11 @@ while game:
                         enemies.remove(enemy)
                         bullets.remove(bullet)
                         enemies.append(enemy)
+                
+                if score >= 10:
+                    
+                    enemy.rect.x, enemy.rect.y = randint(0, win_w-50), randint(-700, 0)
+                    slog = 12
                         
                         
                         
